@@ -307,6 +307,28 @@
     }
     @media (prefers-reduced-motion: reduce) { .video-skeleton::after { animation: none; } }
 
+    /* 사진 상태: data-img = loading(스켈레톤) | ready(사진) | broken(깨진 파일 아이콘만) */
+    .img-box { position: relative; }
+    .img-box[data-img] img { transition: opacity .3s ease, transform .4s ease; }
+    .img-box:not([data-img="ready"]) { background: color-mix(in srgb, var(--line) 55%, var(--surface)); }
+    .img-box:not([data-img="ready"]) img { opacity: 0; }
+    .img-box[data-img="loading"]::after,
+    .img-box[data-img="broken"]::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+    .img-box[data-img="loading"]::after { /* 영상 스켈레톤과 같은 반짝임 */
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 65%, transparent), transparent);
+      animation: vs-shimmer 1.6s ease-in-out infinite;
+    }
+    .img-box[data-img="broken"]::after { /* 깨진 사진 파일 픽토그램 */
+      inset: 50% auto auto 50%; width: clamp(26px, 28%, 44px); aspect-ratio: 1; transform: translate(-50%, -50%);
+      background: var(--muted);
+      -webkit-mask: var(--broken-img) center / contain no-repeat; mask: var(--broken-img) center / contain no-repeat;
+    }
+    :root {
+      --broken-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6l-3 2-3-2-3 2-3-2-3 2-3-2'/%3E%3Cpath d='M3 14l3 2 3-2 3 2 3-2 3 2 3-2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Ccircle cx='8.5' cy='7' r='1.5'/%3E%3C/svg%3E");
+    }
+    @media (prefers-reduced-motion: reduce) { .img-box[data-img="loading"]::after { animation: none; transform: none; } }
+
     .video-empty {
       flex-direction: column; align-items: center; justify-content: center; gap: 6px;
       padding: 16px; text-align: center; background: var(--surface);
@@ -395,6 +417,24 @@
     }
     .work-link:hover { color: var(--accent); border-color: var(--accent); }
     .work-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    /* 언론 소개 카드 (DAP 그림책을 다룬 칼럼) */
+    .news-card {
+      display: grid; grid-template-columns: minmax(0, 200px) 1fr; margin-top: 10px;
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+      background: var(--surface); color: inherit; text-decoration: none;
+      transition: border-color .2s, transform .2s;
+    }
+    .news-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .news-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .news-thumb { position: relative; min-height: 150px; overflow: hidden; background: var(--accent-soft); }
+    .news-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .news-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .news-meta { font-size: 0.78rem; color: var(--muted); }
+    .news-title { font-weight: 700; font-size: 1rem; line-height: 1.4; }
+    .news-author { font-size: 0.82rem; font-weight: 600; }
+    .news-desc { margin-top: 2px; font-size: 0.86rem; color: var(--muted); line-height: 1.6; }
+    .news-go { margin-top: auto; padding-top: 4px; font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+    @media (max-width: 520px) { .news-card { grid-template-columns: 1fr; } .news-thumb { aspect-ratio: 570 / 420; min-height: 0; } }
 
     /* DAP 발표 자료: 페이지 안에서 넘겨 보는 슬라이드 뷰어 */
     .slide-viewer { margin-top: 8px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
@@ -707,6 +747,18 @@
               <div class="poster-grid sketch" data-dir="images_dap_web/sketch/" data-posters="sketch_1.jpg,sketch_2.jpg,sketch_3.jpg,sketch_4.jpg,sketch_5.jpg,allshot_1.jpg,allshot_2.jpg,allshot_3.jpg" data-label="DAP 캐릭터 스케치"></div>
               <p class="poster-label">그림책 원화 전시</p>
               <div class="poster-grid photos" data-dir="images_dap_web/exhibit/" data-posters="exhibit_1.jpg,exhibit_2.jpg,exhibit_3.jpg,exhibit_4.jpg" data-label="그림책 원화 전시 사진"></div>
+              <!-- 이 활동으로 만든 그림책을 소개한 한겨레 칼럼 -->
+              <p class="poster-label">한겨레 시사·칼럼 [똑똑! 한국사회] 지면 수록 - 김현정 작가님</p>
+              <a class="news-card" href="https://www.hani.co.kr/arti/opinion/column/1235173.html" target="_blank" rel="noopener noreferrer">
+                <div class="news-thumb"><img src="images_dap_web/DAP_news_thumb.jpg" alt="칼럼에 실린 그림책 『반장은 왕이 아니야!』의 한 장면" loading="lazy" decoding="async"></div>
+                <div class="news-body">
+                  <p class="news-meta">한겨레 · 2025.12.17</p>
+                  <p class="news-title">“그러니까 반성 좀 하시라고요”</p>
+                  <p class="news-author">김현정 | 방송작가·‘연중마감, 오늘도 씁니다’ 저자</p>
+                  <p class="news-desc">‘대구는 무서운 곳이니 조심해라.’ 한 지인에게서 농담 섞인 문자가 날아왔다. 혹시 모르니 그곳에선 말조심하라는 당부다. 대구의 한 대학에 특강을 가게 되었노라고 주변에 알린 직후였다. 장난인 줄 알면서도 슬며시 뒤통수가 당겼다.</p>
+                  <span class="news-go">칼럼 읽기 ↗</span>
+                </div>
+              </a>
             </li>
             <li>
               <p class="when">2024.05</p>
@@ -1024,6 +1076,26 @@
       replay.addEventListener('click', () => { video.currentTime = 0; video.play(); });
     })();
 
+    // 사진 스켈레톤: 불러오는 동안 반짝임, 실패하면 깨진 파일 아이콘만 (문구 없음)
+    // 인터넷이 끊겨서 실패한 사진은 스켈레톤으로 두었다가, 연결이 돌아오면 다시 불러옴
+    function trackImg(img, box = img.parentElement) {
+      box.classList.add('img-box');
+      const check = () => {
+        if (!img.getAttribute('src')) return;
+        if (!img.complete) box.dataset.img = 'loading';
+        else box.dataset.img = img.naturalWidth ? 'ready' : 'broken';
+      };
+      img.addEventListener('load', () => { box.dataset.img = 'ready'; });
+      img.addEventListener('error', () => {
+        if (navigator.onLine) { box.dataset.img = 'broken'; return; }
+        box.dataset.img = 'loading';
+        window.addEventListener('online', () => { box.dataset.img = 'loading'; img.src = img.src; }, { once: true });
+      });
+      check();
+      return check; // src를 바꾼 뒤 다시 부르면 상태를 새로 맞춤
+    }
+    document.querySelectorAll('.news-thumb img').forEach((img) => trackImg(img));
+
     // 어학연수 사진 그리드: 대표 사진 고정 + 나머지는 새로고침마다 무작위 (필리핀·캐나다가 같은 코드를 씀)
     (() => {
       function makeGallery({ gridId, moreId, lessId, dir, fixed, rest, label }) {
@@ -1048,11 +1120,12 @@
             btn.type = 'button';
             btn.setAttribute('aria-label', `${label} ${i + 1} 크게 보기`);
             const img = document.createElement('img');
-            img.src = photos[i];
             img.alt = `${label} ${i + 1}`;
             img.loading = 'lazy';
             img.decoding = 'async';
             btn.appendChild(img);
+            img.src = photos[i];
+            trackImg(img);
             btn.addEventListener('click', () => openLb(i, photos, label));
             grid.appendChild(btn);
           }
@@ -1152,11 +1225,12 @@
           btn.type = 'button';
           btn.setAttribute('aria-label', `${lbl} ${i + 1} 크게 보기`);
           const img = document.createElement('img');
-          img.src = thumbs[i] ? dir + thumbs[i] : src;
           img.alt = `${lbl} ${i + 1}`;
           img.loading = 'lazy';
           img.decoding = 'async';
           btn.appendChild(img);
+          img.src = thumbs[i] ? dir + thumbs[i] : src;
+          trackImg(img);
           btn.addEventListener('click', () => openLb(i, srcs, lbl));
           box.appendChild(btn);
         });
@@ -1170,6 +1244,7 @@
       const dir = v.dataset.dir, total = +v.dataset.count;
       const src = (n) => `${dir}slide_${String(n).padStart(2, '0')}.jpg`;
       const img = v.querySelector('.sv-stage img');
+      const checkImg = trackImg(img);
       const prev = v.querySelector('.sv-prev'), next = v.querySelector('.sv-next');
       const count = v.querySelector('.sv-count'), dotsBox = v.querySelector('.sv-dots');
       let cur = 1;
@@ -1211,6 +1286,7 @@
       function go(n) {
         cur = Math.max(1, Math.min(total, n));
         img.src = src(cur);
+        checkImg();
         placeAudio();
         img.alt = `DAP 발표 자료 ${cur}번 슬라이드`;
         count.textContent = `${cur} / ${total}`;
